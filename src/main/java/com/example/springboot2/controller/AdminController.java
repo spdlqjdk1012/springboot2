@@ -10,11 +10,16 @@ import java.util.List;
 import java.util.Map;
 
 @Controller
-public class MainController {
+@RequestMapping(value = "/admin")
+public class AdminController {
     @Autowired
     MemberService memberService;
-    @RequestMapping(value = "/main")
-    public String main(){
-        return "user/main";
+
+    @RequestMapping(value = "/memberList")
+    public String memberList(Model model
+    ){
+        List<Map<String, Object>> memberList = memberService.selectMember();
+        model.addAttribute("memberList", memberList);
+        return "admin/memberList";
     }
 }

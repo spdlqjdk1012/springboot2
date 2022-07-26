@@ -7,6 +7,10 @@
     <title>View Test Page</title>
 </head>
 <body>
-    메인화면 입니다
+    <div style="color:#f80808">관리자 페이지</div>
+    회원목록 입니다
+    <c:forEach var="result" items="${memberList}">
+        <div>이름 : ${result.name}</div>
+    </c:forEach> 
 </body>
 </html>
