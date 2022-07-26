@@ -17,4 +17,9 @@ public class MainController {
     public String main(){
         return "user/main";
     }
+
+    @RequestMapping(value = "/login/form")
+    public String loginForm(){
+        return "user/login";
+    }
 }
