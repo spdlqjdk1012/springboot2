@@ -11,6 +11,6 @@
     회원목록 입니다
     <c:forEach var="result" items="${memberList}">
         <div>이름 : ${result.name}</div>
-    </c:forEach> 
+    </c:forEach>
 </body>
 </html>
