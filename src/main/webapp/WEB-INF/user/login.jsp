@@ -8,6 +8,10 @@
 </head>
 <body>
     <div style="color:red">유저 로그인 페이지</div>
-
+    <form action="/login/loginProcess" method="post">
+        <div>아이디 : <input type="text" name="username"/></div>
+        <div>비번 : <input type="password" name="password"/></div>
+        <input type="submit"/>
+    </form>
 </body>
 </html>

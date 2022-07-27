@@ -2,6 +2,11 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.springboot2.mapper.MemberMapper">
     <select id="selectMember"  resultType="map">
-        SELECT name from `member` m
+        SELECT * from `member` m
+    </select>
+
+    <select id="selectMemberById"  resultType="map">
+        SELECT * from `member` m
+        WHERE name = #{name}
     </select>
 </mapper>

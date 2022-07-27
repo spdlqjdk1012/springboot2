@@ -15,4 +15,5 @@ public class MemberService {
     public List<Map<String, Object>> selectMember(){
         return mapper.selectMember();
     }
+
 }

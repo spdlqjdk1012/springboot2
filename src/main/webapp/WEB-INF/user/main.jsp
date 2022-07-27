@@ -9,5 +9,7 @@
 <body>
     <div style="color:red">유저 페이지</div>
     메인화면 입니다
+    <button onClick="location.href='/logoutProcess'">로그아웃</button>
+    <button onClick="location.href='/admin/memberList'">관리자페이지</button>
 </body>
 </html>
