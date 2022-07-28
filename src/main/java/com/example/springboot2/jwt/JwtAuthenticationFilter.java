@@ -27,8 +27,9 @@ public class JwtAuthenticationFilter extends GenericFilterBean{
             // access token 유효하지 않을 경우
             if(!jwtTokenProvider.validateToken(token)){
                 String refresh = jwtTokenProvider.getRefreshToken(token);
+
                 //refresh 토큰도 유효하지 않을 경우
-                if(!jwtTokenProvider.validateToken(refresh)){
+                if(refresh == null || !jwtTokenProvider.validateToken(refresh)){
                     SecurityContextHolder.getContext().setAuthentication(null);
                     chain.doFilter(request, response);
                     return;

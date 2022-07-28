@@ -72,6 +72,8 @@ public class JwtTokenProvider {
     }
     public String getRefreshToken(String token){
         Map<String, Object> authInfo = mapper.selectTokenByAToken(token);
+        if(authInfo==null)
+            return null;
         String refresh = ""+authInfo.get("refresh");
         return refresh;
     }
