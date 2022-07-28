@@ -9,4 +9,43 @@
         SELECT * from `member` m
         WHERE name = #{name}
     </select>
+
+    <select id="selectMemberByIdAndPw"  resultType="map">
+        SELECT * from `member` m
+        WHERE name = #{id} and password = #{pw}
+    </select>
+
+    <insert id="insertToken">
+        INSERT INTO auth
+        (memidx, refresh, access, mname)
+        values (#{midx}, #{refreshToken}, #{accessToken}, #{username})
+    </insert>
+
+    <select id="selectTokenByMemidx"  resultType="map">
+        SELECT * from `auth` a
+        WHERE memidx = #{midx}
+    </select>
+
+    <select id="selectTokenByAToken"  resultType="map">
+        SELECT * from `auth` a
+        WHERE access = #{token}
+    </select>
+
+    <delete id="deleteToken">
+        delete from auth
+        WHERE memidx = #{midx}
+    </delete>
+
+    <select id="selectAuth"  resultType="map">
+        SELECT * from `auth` a
+        WHERE mname = #{mname} and access = #{access} and refresh = #{refresh}
+    </select>
+
+    <update id="updateToken">
+        update auth
+        set
+            access = #{access},
+            refresh = #{refresh}
+        where memidx = #{midx}
+    </update>
 </mapper>

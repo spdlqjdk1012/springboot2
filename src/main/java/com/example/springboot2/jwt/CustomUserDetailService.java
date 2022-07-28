@@ -22,7 +22,6 @@ public class CustomUserDetailService implements UserDetailsService {
         String role = "ROLE_USER";
         //List<Map<String, Object>> memberList = mapper.selectMember();
         Map<String, Object> mem = mapper.selectMemberById(username);
-        System.out.println("mem:"+mem.toString());
         String level = ""+mem.get("level");
 
         if(level.compareTo("user")!=0)

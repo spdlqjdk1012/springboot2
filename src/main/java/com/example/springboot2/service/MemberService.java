@@ -15,5 +15,7 @@ public class MemberService {
     public List<Map<String, Object>> selectMember(){
         return mapper.selectMember();
     }
-
+    public Map<String, Object> selectMemberByIdAndPw(String id, String pw){
+        return mapper.selectMemberByIdAndPw(id, pw);
+    }
 }

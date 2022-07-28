@@ -2,6 +2,7 @@ package com.example.springboot2.controller;
 
 import com.example.springboot2.jwt.CustomUserDetails;
 import com.example.springboot2.jwt.JwtTokenProvider;
+import com.example.springboot2.jwt.TokenResponse;
 import com.example.springboot2.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,10 +41,14 @@ public class MainController {
         System.out.println("test login");
         String username = ""+request.getParameter("username");
         String password = ""+request.getParameter("password");
+        Map<String, Object> mem = memberService.selectMemberByIdAndPw(username, password);
+        if(mem==null){
+            return "redirect:/login/form";
+        }
+        String midx = ""+mem.get("midx");
+        TokenResponse jwt = jwtTokenProvider.createToken(username, midx);
 
-        String jwt = jwtTokenProvider.createToken(username);
-
-        Cookie cookie = new Cookie("jwt", jwt);
+        Cookie cookie = new Cookie("jwt", jwt.getAccessToken());
         cookie.setPath("/");
         cookie.setHttpOnly(true);
         cookie.setSecure(true);

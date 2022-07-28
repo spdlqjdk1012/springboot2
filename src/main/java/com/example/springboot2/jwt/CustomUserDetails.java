@@ -1,11 +1,14 @@
 package com.example.springboot2.jwt;
 
+import lombok.Data;
+import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.io.Serializable;
 import java.util.Collection;
 
+@Data
 public class CustomUserDetails implements UserDetails, Serializable {
     private String id;	// DB에서 PK 값
     private String loginId;		// 로그인용 ID 값
