@@ -15,6 +15,10 @@
         WHERE name = #{id} and password = #{pw}
     </select>
 
+
+
+
+
     <insert id="insertToken">
         INSERT INTO auth
         (memidx, refresh, access, mname)
