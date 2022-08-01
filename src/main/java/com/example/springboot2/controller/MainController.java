@@ -9,10 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.Cookie;
@@ -22,7 +19,7 @@ import java.util.List;
 import java.util.Map;
 
 @RequiredArgsConstructor
-@Controller
+@RestController
 public class MainController {
     private final JwtTokenProvider jwtTokenProvider;
 
@@ -96,4 +93,19 @@ public class MainController {
         ModelAndView memberListView = new ModelAndView("user/deny");
         return memberListView;
     }
+
+    @GetMapping("/exception")
+    public String exception1(){
+        throw new NullPointerException();
+    }
+
+    @GetMapping("/exception2")
+    public String exception2(){
+        throw new ClassCastException();
+    }
+
+//    @ExceptionHandler({NullPointerException.class, ClassCastException.class})
+//    public String handle(Exception ex){
+//        return "Exception Handle!!!";
+//    }
 }
