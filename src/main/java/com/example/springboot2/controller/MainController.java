@@ -1,5 +1,6 @@
 package com.example.springboot2.controller;
 
+import com.example.springboot2.dto.MemberDTO;
 import com.example.springboot2.dto.ResponseDTO;
 import com.example.springboot2.exception.BadRequestException;
 import com.example.springboot2.jwt.CustomUserDetails;
@@ -72,25 +73,29 @@ public class MainController {
     }*/
     @PostMapping(value="/login/loginProcess")
     @ResponseBody
-    public ResponseEntity<ResponseDTO> loginProcess(HttpServletRequest request, HttpServletResponse response) {
-        ModelAndView mv = new ModelAndView();
-
-        String username = ""+request.getParameter("username");
-
+    public ResponseEntity<ResponseDTO> loginProcess(@RequestBody MemberDTO.LoginRequest member, HttpServletRequest request, HttpServletResponse response) {
+        /*String username = ""+request.getParameter("username");
         if( StringUtils.isEmpty( username )){
             throw new BadRequestException("아이디 입력해주세요");
         }
-
-
         String password = ""+request.getParameter("password");
-        Map<String, Object> mem = memberService.selectMemberByIdAndPw(username, password);
+        if( StringUtils.isEmpty( password )){
+            throw new BadRequestException("비밀번호를 입력해주세요");
+        }*/
+        if("".equals(member.getUsername())){
+            throw new BadRequestException("아이디 입력해주세요");
+        }
+        if("".equals(member.getPassword())){
+            throw new BadRequestException("비밀번호 입력해주세요");
+        }
+        
+        Map<String, Object> mem = memberService.selectMemberByIdAndPw(member.getUsername(), member.getPassword());
         if(mem==null){
             throw new BadRequestException("로그인 정보가 일치 하지 않습니다.");
             //return new ResponseEntity<>(ResponseDTO.setFail(500, "로그인 정보가 일치 하지 않습니다.") ,HttpStatus.INTERNAL_SERVER_ERROR);
         }
         String midx = ""+mem.get("midx");
-        TokenResponse jwt = jwtTokenProvider.createToken(username, midx);
-
+        TokenResponse jwt = jwtTokenProvider.createToken(member.getUsername(), midx);
         Cookie cookie = new Cookie("jwt", jwt.getAccessToken());
         cookie.setPath("/");
         cookie.setHttpOnly(true);

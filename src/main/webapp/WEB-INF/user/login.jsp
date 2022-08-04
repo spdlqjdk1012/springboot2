@@ -24,13 +24,13 @@
             username: id,
             password: pw
         }
-        console.log("id:"+id);
+
         $.ajax({
             url: '/login/loginProcess',
             method: 'POST',
-            //contentType: "application/json; charset=utf-8",
-            data : {'username':id, 'password':pw},
-            //data: JSON.stringify(post_data),
+            contentType: "application/json; charset=utf-8",
+            //data : {'username':id, 'password':pw},
+            data: JSON.stringify(post_data),
             success: function (result) {
                 // result{"success":true,"code":0,"msg":"로그인 성공","data":null}
                 alert("result" + JSON.stringify(result));
