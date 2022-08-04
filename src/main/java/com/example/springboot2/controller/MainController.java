@@ -1,14 +1,19 @@
 package com.example.springboot2.controller;
 
+import com.example.springboot2.dto.ResponseDTO;
+import com.example.springboot2.exception.BadRequestException;
 import com.example.springboot2.jwt.CustomUserDetails;
 import com.example.springboot2.jwt.JwtTokenProvider;
 import com.example.springboot2.jwt.TokenResponse;
 import com.example.springboot2.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -36,12 +41,18 @@ public class MainController {
         ModelAndView memberListView = new ModelAndView("user/login");
         return memberListView;
     }
-
+/*
     @PostMapping(value="/login/loginProcess")
-    public ModelAndView loginProcess(HttpServletRequest request, HttpServletResponse response) {
+    public ResponseEntity loginProcess(HttpServletRequest request, HttpServletResponse response) {
         ModelAndView mv = new ModelAndView();
 
         String username = ""+request.getParameter("username");
+
+        if( StringUtils.isEmpty( username )){
+            throw new BadRequestException("아이디 입력해주세요");
+        }
+
+
         String password = ""+request.getParameter("password");
         Map<String, Object> mem = memberService.selectMemberByIdAndPw(username, password);
         if(mem==null){
@@ -58,6 +69,34 @@ public class MainController {
         response.addCookie(cookie);
         mv.setViewName("redirect:/main");
         return mv;
+    }*/
+    @PostMapping(value="/login/loginProcess")
+    @ResponseBody
+    public ResponseEntity<ResponseDTO> loginProcess(HttpServletRequest request, HttpServletResponse response) {
+        ModelAndView mv = new ModelAndView();
+
+        String username = ""+request.getParameter("username");
+
+        if( StringUtils.isEmpty( username )){
+            throw new BadRequestException("아이디 입력해주세요");
+        }
+
+
+        String password = ""+request.getParameter("password");
+        Map<String, Object> mem = memberService.selectMemberByIdAndPw(username, password);
+        if(mem==null){
+            throw new BadRequestException("로그인 정보가 일치 하지 않습니다.");
+            //return new ResponseEntity<>(ResponseDTO.setFail(500, "로그인 정보가 일치 하지 않습니다.") ,HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        String midx = ""+mem.get("midx");
+        TokenResponse jwt = jwtTokenProvider.createToken(username, midx);
+
+        Cookie cookie = new Cookie("jwt", jwt.getAccessToken());
+        cookie.setPath("/");
+        cookie.setHttpOnly(true);
+        cookie.setSecure(true);
+        response.addCookie(cookie);
+        return new ResponseEntity<>(ResponseDTO.setSuccess("로그인 성공"), HttpStatus.OK);
     }
     @GetMapping(value="/logoutProcess")
     public ModelAndView loginlogout(HttpServletRequest request, HttpServletResponse response) {
