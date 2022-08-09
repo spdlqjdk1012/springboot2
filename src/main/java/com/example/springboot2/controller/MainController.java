@@ -6,6 +6,7 @@ import com.example.springboot2.exception.BadRequestException;
 import com.example.springboot2.jwt.CustomUserDetails;
 import com.example.springboot2.jwt.JwtTokenProvider;
 import com.example.springboot2.jwt.TokenResponse;
+import com.example.springboot2.redis.RedisService;
 import com.example.springboot2.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +29,8 @@ import java.util.Map;
 @RestController
 public class MainController {
     private final JwtTokenProvider jwtTokenProvider;
+    @Autowired
+    private RedisService redisService;
 
     @Autowired
     MemberService memberService;
@@ -95,7 +98,7 @@ public class MainController {
             //return new ResponseEntity<>(ResponseDTO.setFail(500, "로그인 정보가 일치 하지 않습니다.") ,HttpStatus.INTERNAL_SERVER_ERROR);
         }
         String midx = ""+mem.get("midx");
-        TokenResponse jwt = jwtTokenProvider.createToken(member.getUsername(), midx);
+        TokenResponse jwt = jwtTokenProvider.createToken(member.getUsername(), midx, request);
         Cookie cookie = new Cookie("jwt", jwt.getAccessToken());
         cookie.setPath("/");
         cookie.setHttpOnly(true);

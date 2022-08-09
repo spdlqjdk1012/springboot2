@@ -1,6 +1,7 @@
 package com.example.springboot2.jwt;
 
 import com.example.springboot2.mapper.MemberMapper;
+import com.example.springboot2.redis.RedisService;
 import com.example.springboot2.service.MemberService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
@@ -31,9 +32,12 @@ public class JwtTokenProvider {
     CustomUserDetailService customUserDetailService;
 
     @Autowired
+    private RedisService redisService;
+
+    @Autowired
     public MemberMapper mapper;
 
-    public TokenResponse createToken(String userPk, String midx) {
+    public TokenResponse createToken(String userPk, String midx, HttpServletRequest request) {
         Claims claims = Jwts.claims().setSubject(userPk); // JWT payload 에 저장되는 정보단위
         Date now = new Date();
         String accessToken = Jwts.builder()
@@ -53,9 +57,10 @@ public class JwtTokenProvider {
                 .compact();
 
         //이미 토큰이 발행되어 있다면 기존 토큰 삭제
-        deleteToken(midx);
+        deleteToken(userPk, request);
         // 디비에 삽입
-        mapper.insertToken(userPk, refreshToken, accessToken, midx, userPk);
+        //mapper.insertToken(userPk, refreshToken, accessToken, midx, userPk);
+        redisService.setRedisStringValue(userPk, refreshToken);
 
         return TokenResponse.builder()
                 .accessToken(accessToken)
@@ -63,26 +68,47 @@ public class JwtTokenProvider {
                 .build();
     }
 
-    public void deleteToken(String midx){
-        Map<String, Object> authInfo = mapper.selectTokenByMemidx(midx);
+    public void deleteToken(String userPk, HttpServletRequest request){
+        /*Map<String, Object> authInfo = mapper.selectTokenByMemidx(midx);
         if(authInfo==null)
-            return;
-        mapper.deleteToken(midx);
-        //쿠키도 삭제하면 좋긴 할듯..
+            return;*/
+
+        Cookie[] cookies=request.getCookies(); // 모든 쿠키 가져오기
+        if(cookies!=null){
+            for (Cookie c : cookies) {
+                String name = c.getName(); // 쿠키 이름 가져오기
+                String value = c.getValue(); // 쿠키 값 가져오기
+                if (name.equals("jwt")) {
+                    c.setMaxAge(0);
+                    if(redisService.isExists(userPk))
+                        redisService.delete(userPk);
+                    break;
+                }
+            }
+        }
+        //mapper.deleteToken(midx);
     }
     public String getRefreshToken(String token){
-        Map<String, Object> authInfo = mapper.selectTokenByAToken(token);
+        //토큰 해독 이름으로 조회
+ /*       Map<String, Object> authInfo = mapper.selectTokenByAToken(token);
         if(authInfo==null)
             return null;
-        String refresh = ""+authInfo.get("refresh");
+        String refresh = ""+authInfo.get("refresh");*/
+        System.out.println("token userPk:"+getUserPk(token));
+        String userPk = getUserPk(token);
+        String refresh = null;
+        if(redisService.isExists(userPk))
+            refresh = redisService.getRedisStringValue(userPk);
         return refresh;
     }
 
     public String setAccessToken(String access, String refresh, HttpServletRequest request, ServletResponse response){
         String userPk = getUserPk(refresh);
         // access refresh userPk 동일한 auth값 있는지 디비에서 체크
-        Map<String, Object> authInfo = mapper.selectAuth(userPk, access, refresh);
-        if (authInfo==null)
+//        Map<String, Object> authInfo = mapper.selectAuth(userPk, access, refresh);
+//        if (authInfo==null)
+//            return null;
+        if(!redisService.isExists(userPk))
             return null;
 
         Claims claims = Jwts.claims().setSubject(userPk); // JWT payload 에 저장되는 정보단위
@@ -103,8 +129,11 @@ public class JwtTokenProvider {
                 // signature 에 들어갈 secret값 세팅
                 .compact();
         // accessToken, refreshToken 디비 갱신, 쿠키갱신
-        String midx = ""+authInfo.get("memidx");
-        mapper.updateToken(midx, accessToken, refreshToken);
+        //String midx = ""+authInfo.get("memidx");
+        //mapper.updateToken(midx, accessToken, refreshToken);
+        redisService.delete(userPk);
+        redisService.setRedisStringValue(userPk, refreshToken);
+
         Cookie cookie = new Cookie("jwt", accessToken);
         cookie.setPath("/");
         cookie.setHttpOnly(true);

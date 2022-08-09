@@ -8,7 +8,7 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 </head>
 <body>
-    <div style="color:red">유저 로그인 페이지</div>
+    <div style="color:red">유저 로그인 페이지aadd</div>
     <div>아이디 : <input type="text" name="username" id="principal"/></div>
     <div>비번 : <input type="password" name="password" id="credential"/></div>
     <button onClick="javascript:login();">로그인</button>
@@ -33,7 +33,7 @@
             data: JSON.stringify(post_data),
             success: function (result) {
                 // result{"success":true,"code":0,"msg":"로그인 성공","data":null}
-                alert("result" + JSON.stringify(result));
+                //alert("result" + JSON.stringify(result));
                 window.location.href = '/main';
             },
             error: function (error) {
